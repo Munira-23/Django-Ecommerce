@@ -5,7 +5,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 git branch: 'develop',
-                    credentialsId: 'github-token',
+                    credentialsId: 'github',
                     url: 'https://github.com/Munira-23/Django-Ecommerce.git'
             }
         }
