@@ -4,9 +4,9 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'your-github-credentials-id',
-                    url: 'https://github.com/your-username/django-ecommerce.git'
+                git branch: 'develop',
+                    credentialsId: 'github-token',
+                    url: 'https://github.com/Munira-23/Django-Ecommerce.git'
             }
         }
 
@@ -18,7 +18,16 @@ pipeline {
             }
         }
 
-        stage('Run Container') {
+        stage('Stop & Remove Old Container') {
+            steps {
+                script {
+                    // Stop and remove container if it exists
+                    sh 'docker rm -f django-ecommerce-app || true'
+                }
+            }
+        }
+
+        stage('Run New Container') {
             steps {
                 script {
                     sh 'docker run -d -p 8000:8000 --name django-ecommerce-app django-ecommerce'
