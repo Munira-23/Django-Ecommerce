@@ -21,8 +21,15 @@ pipeline {
         stage('Stop & Remove Old Container') {
             steps {
                 script {
-                    // Stop and remove container if it exists
                     sh 'docker rm -f django-ecommerce-app || true'
+                }
+            }
+        }
+
+        stage('Remove Old Image (optional)') {
+            steps {
+                script {
+                    sh 'docker rmi -f django-ecommerce || true'
                 }
             }
         }
