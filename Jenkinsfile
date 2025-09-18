@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-creds')
-        DOCKER_HUB_USER = "munira123"
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub') // use your actual ID here
         IMAGE_NAME = "django-ecommerce"
     }
 
@@ -18,35 +17,27 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh 'docker build -t $IMAGE_NAME .'
-                }
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                script {
-                    sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_USER --password-stdin'
-                }
+                sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
             }
         }
 
         stage('Tag & Push Image') {
             steps {
-                script {
-                    sh 'docker tag $IMAGE_NAME $DOCKER_HUB_USER/$IMAGE_NAME:latest'
-                    sh 'docker push $DOCKER_HUB_USER/$IMAGE_NAME:latest'
-                }
+                sh 'docker tag $IMAGE_NAME $DOCKER_HUB_CREDENTIALS_USR/$IMAGE_NAME:latest'
+                sh 'docker push $DOCKER_HUB_CREDENTIALS_USR/$IMAGE_NAME:latest'
             }
         }
 
         stage('Deploy Container') {
             steps {
-                script {
-                    sh 'docker rm -f django-ecommerce-app || true'
-                    sh 'docker run -d -p 8000:8000 --name django-ecommerce-app $DOCKER_HUB_USER/$IMAGE_NAME:latest'
-                }
+                sh 'docker rm -f django-ecommerce-app || true'
+                sh 'docker run -d -p 8000:8000 --name django-ecommerce-app $DOCKER_HUB_CREDENTIALS_USR/$IMAGE_NAME:latest'
             }
         }
     }
