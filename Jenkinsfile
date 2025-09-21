@@ -1,23 +1,31 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout() // prevents Jenkins from auto-checkout
+    }
+
     environment {
-        DOCKER_IMAGE = "munira123/django-ecommerce"   // your Docker Hub username/repo
+        DOCKER_IMAGE = "munira123/django-ecommerce"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                cleanWs() // optional but recommended to avoid stale workspaces
-                checkout scm
+                cleanWs() // wipe any leftover workspace
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/develop']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Munira-23/Django-Ecommerce.git',
+                        credentialsId: 'github'
+                    ]]
+                ])
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t $DOCKER_IMAGE:${BUILD_NUMBER} ."
-                }
+                sh "docker build -t $DOCKER_IMAGE:${BUILD_NUMBER} ."
             }
         }
 
@@ -35,21 +43,14 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    sh "docker push $DOCKER_IMAGE:${BUILD_NUMBER}"
-                }
+                sh "docker push $DOCKER_IMAGE:${BUILD_NUMBER}"
             }
         }
 
         stage('Deploy Container') {
             steps {
-                script {
-                    // Stop & remove old container if it exists
-                    sh "docker rm -f django-ecommerce || true"
-
-                    // Run new container from the freshly built image
-                    sh "docker run -d --name django-ecommerce -p 8000:8000 $DOCKER_IMAGE:${BUILD_NUMBER}"
-                }
+                sh "docker rm -f django-ecommerce || true"
+                sh "docker run -d --name django-ecommerce -p 8000:8000 $DOCKER_IMAGE:${BUILD_NUMBER}"
             }
         }
     }
