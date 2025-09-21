@@ -6,6 +6,13 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                cleanWs() // optional but recommended to avoid stale workspaces
+                checkout scm
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
