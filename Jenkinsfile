@@ -2,18 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "munira123/django-ecommerce"   // replace with your Docker Hub username/repo
+        DOCKER_IMAGE = "munira123/django-ecommerce"   // your Docker Hub username/repo
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'develop',
-                    credentialsId: 'github', // replace with your GitHub credentials ID
-                    url: 'https://github.com/Munira-23/Django-Ecommerce.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
