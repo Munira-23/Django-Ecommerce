@@ -29,7 +29,23 @@ pipeline {
             }
         }
 
-        stage('Login to Docker Hub') {
+                stage('Trivy Scan') {
+            steps {
+                script {
+                    // Scan the Docker image for vulnerabilities
+                    sh "trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_IMAGE:${BUILD_NUMBER}"
+
+                    // Optional: save scan report for Jenkins logs
+                    sh "trivy image --severity HIGH,CRITICAL --format table -o trivy-report.txt $DOCKER_IMAGE:${BUILD_NUMBER}"
+
+                    // Archive report so you can view/download it in Jenkins
+                    archiveArtifacts artifacts: 'trivy-report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
+
+    stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub',
