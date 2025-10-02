@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  web:
+    image: munira123/django-ecommerce:27
+    container_name: django-ecommerce
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=demo.settings
+      - DEBUG=True
+    restart: always 
