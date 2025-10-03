@@ -20,7 +20,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     restart: always
-    
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -30,3 +30,5 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     restart: always
+
+    
